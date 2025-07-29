@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Number Guessing Game</title>
+  <style>
+    :root {
+      --border: #00aaff;
+      --glow: rgba(0, 170, 255, 0.8);
+      --inner: rgba(0, 100, 255, 0.4);
+      --text: #00ffea;
+      --button-bg: #001f33;
+      --button-color: #00f7ff;
+    }
+
+    body {
+      background: radial-gradient(circle at center, #000015, #000);
+      font-family: 'Orbitron', sans-serif;
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .game {
+      background: #02020a;
+      padding: 20px;
+      border-radius: 20px;
+      border: 3px solid var(--border);
+      box-shadow: 0 0 60px var(--glow),
+                  0 0 120px var(--inner) inset;
+      text-align: center;
+      width: 300px;
+      transition: all 0.3s ease;
+    }
+
+    h2 {
+      color: var(--button-color);
+      text-shadow: 0 0 10px var(--border);
+    }
+
+    input {
+      width: 80%;
+      padding: 6px;
+      text-align: center;
+      font-size: 1.2rem;
+      margin: 10px 0;
+      border-radius: 6px;
+      border: 2px solid var(--border);
+      background: var(--button-bg);
+      color: var(--text);
+    }
+
+    button {
+      margin-top: 8px;
+      padding: 6px 14px;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 2px solid var(--border);
+      background: var(--button-bg);
+      color: var(--button-color);
+      transition: 0.3s;
+    }
+
+    button:hover {
+      transform: scale(1.1);
+    }
+
+    .mode-btn {
+      margin-bottom: 8px;
+    }
+
+    #status {
+      margin-top: 10px;
+      font-size: 1.1rem;
+      min-height: 20px;
+    }
+
+    #log {
+      margin-top: 15px;
+      max-height: 120px;
+      overflow-y: auto;
+      text-align: left;
+      padding: 5px;
+      font-size: 0.9rem;
+      color: #00ffb3;
+      border-top: 1px solid var(--border);
+    }
+
+    .bottom-controls {
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-around;
+    }
+
+    .clear-btn {
+      background: #ffcc00;
+      color: #000;
+      border: 2px solid #ffaa00;
+      box-shadow: 0 0 10px #ffcc00;
+      animation: glow 2s infinite alternate;
+    }
+
+    .reset-btn {
+      background: #ff0044;
+      color: white;
+      border: 2px solid #ff3366;
+      box-shadow: 0 0 10px #ff0044;
+    }
+
+    @keyframes glow {
+      from { box-shadow: 0 0 8px #ffcc00; }
+      to { box-shadow: 0 0 20px #ffaa00; }
+    }
+
+    /* 🔴 Hard mode colors */
+    .hard {
+      --border: #ff3333;
+      --glow: rgba(255, 50, 50, 0.8);
+      --inner: rgba(100, 0, 0, 0.5);
+      --text: #ffdddd;
+      --button-bg: #330000;
+      --button-color: #ff6666;
+    }
+  </style>
+</head>
+<body>
+  <div class="game" id="gameBox">
+    <button class="mode-btn" onclick="toggleMode()">Mode: 1-100</button>
+    <h2>Guess the Number</h2>
+    <p id="tries">Tries left: 10</p>
+    <input type="number" id="guess" placeholder="Enter number">
+    <button onclick="checkGuess()">Submit</button>
+    <div id="status"></div>
+    <div id="log"></div>
+    <div class="bottom-controls">
+      <button class="reset-btn" onclick="resetGame()">Reset</button>
+      <button class="clear-btn" onclick="clearLogs()">Clear Logs</button>
+    </div>
+  </div>
+
+  <script>
+    let range = 100;
+    let maxTries = 10;
+    let triesLeft = maxTries;
+    let number = Math.floor(Math.random() * range) + 1;
+    const status = document.getElementById('status');
+    const tries = document.getElementById('tries');
+    const log = document.getElementById('log');
+    const modeBtn = document.querySelector('.mode-btn');
+    const gameBox = document.getElementById('gameBox');
+
+    function toggleMode() {
+      range = (range === 100) ? 500 : 100;
+      maxTries = (range === 100) ? 10 : 15;
+      gameBox.classList.toggle('hard', range === 500);
+      resetGame();
+      modeBtn.textContent = `Mode: 1-${range}`;
+    }
+
+    function checkGuess() {
+      if (triesLeft <= 0) return;
+      const guess = parseInt(document.getElementById('guess').value);
+      if (!guess || guess < 1 || guess > range) return;
+      triesLeft--;
+      let msg = `You guessed ${guess}: `;
+      if (guess === number) {
+        msg += "🎉 Correct!";
+        triesLeft = 0;
+      } else if (guess < number) {
+        msg += "Too low!";
+      } else {
+        msg += "Too high!";
+      }
+      tries.textContent = `Tries left: ${triesLeft}`;
+      status.textContent = msg;
+      log.innerHTML += msg + "<br>";
+    }
+
+    function resetGame() {
+      number = Math.floor(Math.random() * range) + 1;
+      triesLeft = maxTries;
+      tries.textContent = `Tries left: ${triesLeft}`;
+      status.textContent = '';
+      document.getElementById('guess').value = '';
+    }
+
+    function clearLogs() {
+      log.innerHTML = '';
+    }
+  </script>
+</body>
+</html>
